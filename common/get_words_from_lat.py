@@ -72,7 +72,7 @@ for key, f in read_fst(sys.stdin):
 
     assert len(boundary_states & between_states) == 0
     
-    print("Bound: {} Between: {} Total states: {} Sum: {}".format(len(boundary_states), len(between_states), f.num_states(), len(boundary_states | between_states)), file=sys.stderr)
+    print("{} Bound: {} Between: {} Total states: {} Sum: {} Num arcs: {}".format(key, len(boundary_states), len(between_states), f.num_states(), len(boundary_states | between_states), sum(f.num_arcs(s) for s in f.states())), file=sys.stderr)
     
     def dfs(state, cur_seq):
         global sequences
