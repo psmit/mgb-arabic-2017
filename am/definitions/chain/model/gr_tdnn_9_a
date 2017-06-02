@@ -1,0 +1,7 @@
+
+prep=gr_tdnn_9
+xconfig_template=definitions/chain/model/tdnn9.xconfig
+relu_dim=500
+num_epochs=2
+
+num_chunk_per_minibatch=256,128

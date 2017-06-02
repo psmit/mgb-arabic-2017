@@ -1,0 +1,29 @@
+
+
+xconfig=`mktemp`
+cat << EOF > $xconfig
+input dim=$ivec_dim name=ivector
+input dim=$feat_dim name=input
+
+fixed-affine-layer name=lda input=Append(-1,0,1,ReplaceIndex(ivector, t, 0)) affine-transform-file=$dir/configs/lda.mat
+
+relu-renorm-layer name=tdnn1 dim=$relu_dim
+relu-renorm-layer name=tdnn2 input=Append(-1,0,1) dim=$relu_dim
+relu-renorm-layer name=tdnn3 input=Append(-1,0,1,2) dim=$relu_dim
+relu-renorm-layer name=tdnn4 input=Append(-3,0,3) dim=$relu_dim
+relu-renorm-layer name=tdnn5 input=Append(-3,0,3) dim=$relu_dim
+relu-renorm-layer name=tdnn6 input=Append(-3,0,3) dim=$relu_dim
+relu-renorm-layer name=tdnn7 input=Append(-3,0,3) dim=$relu_dim
+relu-renorm-layer name=tdnn8 input=Append(-3,0,3) dim=$relu_dim
+relu-renorm-layer name=tdnn9 input=Append(-6,-3,0) dim=$relu_dim
+
+## adding the layers for chain branch
+relu-renorm-layer name=prefinal-chain input=tdnn9 dim=$relu_dim target-rms=0.5
+output-layer name=output include-log-softmax=false dim=$num_targets max-change=1.5
+
+# adding the layers for xent branch
+
+relu-renorm-layer name=prefinal-xent input=tdnn9 dim=$relu_dim target-rms=0.5
+output-layer name=output-xent dim=$num_targets learning-rate-factor=$learning_rate_factor max-change=1.5
+
+EOF

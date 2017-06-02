@@ -1,0 +1,6 @@
+train_set=data/train_gr_cleaned
+gmm=exp/tri3_gr_cleaned
+data_lang=data/lang_gr
+
+speed_perturb=true
+vol_perturb=true
