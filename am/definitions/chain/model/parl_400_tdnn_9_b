@@ -1,0 +1,5 @@
+
+prep=parl_400_9
+xconfig_template=definitions/chain/model/tdnn9.xconfig
+relu_dim=600
+num_epochs=1

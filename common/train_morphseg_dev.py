@@ -13,19 +13,18 @@ import math
 def parse_name(d):
     base = os.path.basename(d)
     print(base ,file=sys.stderr)
-    assert base.startswith("morfseg")
+    assert base.startswith("morf")
     return 
 def main(d):
     parse_name(d)
 
     word_count = collections.Counter()
     print(d)
-    parent_dir = os.path.dirname(d)
-    print("parent_dir {}".format(parent_dir))
-    seg_dir = os.path.dirname(parent_dir)
+    seg_dir = os.path.dirname(d)
     print("seg_dir {}".format(seg_dir))
     for f in os.listdir(seg_dir):
         if f.endswith(".xz"):
+            print(f)
             for line in lzma.open(os.path.join(seg_dir, f), 'rt', encoding='utf-8'):
                 for word in line.strip().split():
                     word_count[word] += 1

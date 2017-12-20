@@ -1,0 +1,5 @@
+
+prep=speecon_9
+xconfig_template=definitions/chain/model/tdnn9.xconfig
+relu_dim=450
+num_epochs=1

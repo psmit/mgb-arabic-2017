@@ -17,5 +17,5 @@ d=$3
 
 e=$(python3 -c "print($d*2.0)")
 
-varigram_kn -o $dir/${fn}.dev -C -O "0 0 1" -3 -a -D $d -E $e $dir/${fn}.train $dir/arpa-$fn-$d 
+varigram_kn -o $dir/${fn}.dev -n 80 -C -O "0 0 1" -3 -a -D $d -E $e $dir/${fn}.train $dir/arpa-$fn-$d 
 

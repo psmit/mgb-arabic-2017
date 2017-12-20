@@ -22,6 +22,8 @@ if "<w>" in st:
 else:
     wtag = None
 
+unktag=st.find("<UNK>")
+
 def read_fst(inp):
     compiler = fst.Compiler()
     while True:
@@ -52,13 +54,19 @@ for key, f in read_fst(sys.stdin):
     for s in f.states():
         for i, a in enumerate(f.arcs(s)):
             sym = st.find(a.ilabel)
+#            if sym == "<UNK>":
+#                if s not in between_states:
+#                    boundary_states.add(s)
+#                if a.nextstate not in boundary_states:
+#                    boundary_states.add(a.nextstate)
             if sym == "<w>":
                 boundary_states.add(a.nextstate)
-            if sym.startswith('+'):
+            if sym.startswith('+'):# and s not in boundary_states:
                 between_states.add(s)
-            if sym.endswith('+'):
+            if sym.endswith('+'):# and a.nextstate not in boundary_states:
                 between_states.add(a.nextstate)
 
+    assert len(boundary_states & between_states) == 0
     if "<w>" in st:
         for i, s in enumerate(f.states()):
             if i == 0:
@@ -89,4 +97,19 @@ for key, f in read_fst(sys.stdin):
         dfs(s, tuple())    
 
 for s in sequences:
+    if len(s) == 0:
+        continue
+    if s[-1] == wtag:
+        s = s[:-1]
+    if len(s) == 0:
+        continue
+    if s[-1] == unktag:
+        s = s[:-1]
+    if len(s) == 0:
+        continue
     print(" ".join(str(c) for c in s))# if c != wtag))
+
+#if wtag is not None:
+#    print(wtag)
+#
+#print(unktag)

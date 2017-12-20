@@ -2,7 +2,7 @@
 #SBATCH -p coin,short-ivb,short-wsm,short-hsw,batch-hsw,batch-wsm,batch-ivb
 #SBATCH -t 3:00:00
 #SBATCH -n 1
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=20
 #SBATCH -N 1
 #SBATCH --mem-per-cpu=5G
 #SBATCH -o log/recognize-%j.out
@@ -13,7 +13,7 @@ export LC_ALL=C
 # Begin configuration section.
 dataset=dev
 skip_scoring=false
-beam=15
+beam=18
 iter=final
 extra_flags=""
 extra_name=""
@@ -53,15 +53,15 @@ if [ "$iter" != "final" ]; then
 extra=${iter}${extra}
 fi
 if [ ! -f ${am}/decode${extra}_${graph}/wer_15_0.0 ]; then 
- steps/nnet3/decode.sh $extra_flags --iter $iter --beam $beam --skip-scoring $skip_scoring --nj 8 $decode_flags --scoring-opts "--min-lmwt 4 --max-lmwt 18" --online-ivector-dir ${am}/ivecs/ivectors_${dataset} ${am}/graph_${graph} ${am}/feats/${dataset} ${am}/decode${extra}_$graph
+ steps/nnet3/decode.sh $extra_flags --cmd "run.pl --max-jobs-run 19" --iter $iter --beam $beam --lattice-beam 10.0 --skip-scoring $skip_scoring --nj 50 $decode_flags --scoring-opts "--min-lmwt 4 --max-lmwt 18" --online-ivector-dir ${am}/ivecs/ivectors_${dataset} ${am}/graph_${graph} ${am}/feats/${dataset} ${am}/decode${extra}_$graph
 fi
-
+exit
 if [ ! -f ${am}/decode${extra}_${graph}_big/wer_15_0.0 ]; then 
 echo "rescore result not there yet"
 echo "${rl}_big/G.carpa"
 if [ -f ${rl}_big/G.carpa ]; then
 echo "There is a carpa!!"
-  steps/lmrescore_const_arpa.sh --skip-scoring $skip_scoring --scoring-opts "--min-lmwt 4 --max-lmwt 18" $rl ${rl}_big ${am}/feats/${dataset} ${am}/decode${extra}_${graph} ${am}/decode${extra}_${graph}_big
+  steps/lmrescore_const_arpa.sh --cmd "run.pl --max-jobs-run 19" --skip-scoring $skip_scoring --scoring-opts "--min-lmwt 4 --max-lmwt 18" $rl ${rl}_big ${am}/feats/${dataset} ${am}/decode${extra}_${graph} ${am}/decode${extra}_${graph}_big
 fi
 fi
 
@@ -71,7 +71,7 @@ echo "rescore result domain not there yet"
 echo "${rl}_domain/G.carpa"
 if [ -f ${rl}_domain/G.carpa ]; then
 echo "There is a carpa!!"
-  steps/lmrescore_const_arpa.sh --skip-scoring $skip_scoring --scoring-opts "--min-lmwt 4 --max-lmwt 18" $rl ${rl}_domain ${am}/feats/${dataset} ${am}/decode${extra}_${graph} ${am}/decode${extra}_${graph}_domain
+  steps/lmrescore_const_arpa.sh --cmd "run.pl --max-jobs-run 19" --skip-scoring $skip_scoring --scoring-opts "--min-lmwt 4 --max-lmwt 18" $rl ${rl}_domain ${am}/feats/${dataset} ${am}/decode${extra}_${graph} ${am}/decode${extra}_${graph}_domain
 fi
 fi
 
@@ -81,6 +81,6 @@ echo "rescore result not there yet"
 echo "${rl}_egy/G.carpa"
 if [ -f ${rl}_egy/G.carpa ]; then
 echo "There is a carpa!!"
-  steps/lmrescore_const_arpa.sh --skip-scoring $skip_scoring --scoring-opts "--min-lmwt 4 --max-lmwt 18" $rl ${rl}_egy ${am}/feats/${dataset} ${am}/decode${extra}_${graph} ${am}/decode${extra}_${graph}_egy
+  steps/lmrescore_const_arpa.sh --cmd "run.pl --max-jobs-run 19" --skip-scoring $skip_scoring --scoring-opts "--min-lmwt 4 --max-lmwt 18" $rl ${rl}_egy ${am}/feats/${dataset} ${am}/decode${extra}_${graph} ${am}/decode${extra}_${graph}_egy
 fi
 fi

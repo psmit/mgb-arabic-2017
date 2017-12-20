@@ -61,11 +61,7 @@ fi
 function normalise {
 inFile=$1
 outFile=$2
-cat $inFile | cut -d ' ' -f1 > 1
-cat $inFile  | cut -d ' ' -f2- > 2
-perl -pe 's/[><|]/A/g;s/p/h/g;s/Y/y/g;' < 2  > 2.norm
-paste -d ' ' 1 2.norm > $outFile
-rm 1 2 2.norm 
+paste -d ' ' <(cat $inFile | cut -d ' ' -f1) <(cat $inFile  | cut -d ' ' -f2- | perl -pe 's/[><|]/A/g;s/p/h/g;s/Y/y/g;') > $outFile
 }
 
 mkdir -p $dir/scoring_mrwer
@@ -73,7 +69,8 @@ mkdir -p $dir/scoring_mrwer
 # we will use the data where all transcribers marked as non-overlap speech    
 cat $data/mrwer-* | awk '{print $1}' | sort | uniq -c  | grep " $(ls -1 $data/mrwer-* | wc -l) "  | awk '{print $2}'  | sort -u > $dir/scoring_mrwer/id.common
 for x in  $data/mrwer-*; do
-  grep -f $dir/scoring_mrwer/id.common $x > $dir/scoring_mrwer/$(basename $x).common  
+  utils/filter_scp.pl $dir/scoring_mrwer/id.common $x > $dir/scoring_mrwer/$(basename $x).common
+#  grep -f $dir/scoring_mrwer/id.common $x > $dir/scoring_mrwer/$(basename $x).common  
   normalise $dir/scoring_mrwer/$(basename $x).common $dir/scoring_mrwer/$(basename $x).norm
 done
 
@@ -102,7 +99,8 @@ if [ $stage -le 0 ]; then
         lattice-best-path --word-symbol-table=$symtab ark:- ark,t:- \| \
         utils/int2sym.pl -f 2- $symtab \| \
         $hyp_filtering_cmd \| tee $dir/scoring_mrwer/penalty_$wip/LMWT.txt \| \
-        grep -f $dir/scoring_mrwer/id.common '>' $dir/scoring_mrwer/penalty_$wip/LMWT.txt.common || exit 1;
+        utils/filter_scp.pl $dir/scoring_mrwer/id.common '>' $dir/scoring_mrwer/penalty_$wip/LMWT.txt.common || exit 1;
+        #grep -f $dir/scoring_mrwer/id.common '>' $dir/scoring_mrwer/penalty_$wip/LMWT.txt.common || exit 1;
     fi
 
     for f in $dir/scoring_mrwer/penalty_$wip/*.txt; do
